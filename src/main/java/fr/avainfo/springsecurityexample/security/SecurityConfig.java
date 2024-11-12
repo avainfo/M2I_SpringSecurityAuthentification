@@ -18,10 +18,10 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers("/api/public/**")
-						.permitAll()
-						.anyRequest()
-						.authenticated()
+						.requestMatchers("/api/public/**").permitAll()
+						.requestMatchers("/api/private/admin").hasRole("ADMIN")
+						.requestMatchers("/api/private/user").hasRole("UPPER_USER")
+						.anyRequest().authenticated()
 				)
 				.formLogin(form -> form.defaultSuccessUrl("/api/private"))
 				.httpBasic(withDefaults());
@@ -36,11 +36,16 @@ public class SecurityConfig {
 				.roles("USER")
 				.build();
 
+		var superUser = User.withUsername("SuperUser")
+				.password("{noop}password")
+				.roles("UPPER_USER")
+				.build();
+
 		var admin = User.withUsername("admin")
 				.password("{noop}admin123")
 				.roles("ADMIN")
 				.build();
 
-		return new InMemoryUserDetailsManager(user, admin);
+		return new InMemoryUserDetailsManager(user, superUser, admin);
 	}
 }
