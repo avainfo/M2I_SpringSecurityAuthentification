@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,7 +22,7 @@ public class SecurityConfig {
 		http.authorizeHttpRequests(authorize -> authorize
 						.requestMatchers("/api/public/**").permitAll()
 						.requestMatchers("/api/private/admin").hasRole("ADMIN")
-						.requestMatchers("/api/private/user").hasRole("UPPER_USER")
+						.requestMatchers("/api/private/user").hasRole("SUPER_USER")
 						.anyRequest().authenticated()
 				)
 				.formLogin(form -> form.defaultSuccessUrl("/api/private"))
@@ -37,12 +38,11 @@ public class SecurityConfig {
 	public UserDetailsService userDetailsService() {
 		var user = User.withUsername("user")
 				.password("{noop}password")
-				.roles("USER")
 				.build();
 
 		var superUser = User.withUsername("SuperUser")
-				.password("{noop}password")
-				.roles("UPPER_USER")
+				.password("{noop}123")
+				.roles("SUPER_USER")
 				.build();
 
 		var admin = User.withUsername("admin")
