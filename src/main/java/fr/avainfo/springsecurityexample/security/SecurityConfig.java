@@ -1,5 +1,6 @@
 package fr.avainfo.springsecurityexample.security;
 
+import fr.avainfo.springsecurityexample.handlers.RoleAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,10 @@ public class SecurityConfig {
 						.anyRequest().authenticated()
 				)
 				.formLogin(form -> form.defaultSuccessUrl("/api/private"))
-				.httpBasic(withDefaults());
+				.httpBasic(withDefaults())
+				.exceptionHandling(exception -> exception
+						.accessDeniedHandler(new RoleAccessDeniedHandler())
+				);
 
 		return http.build();
 	}
